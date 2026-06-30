@@ -131,13 +131,14 @@ select{background:var(--ink);color:var(--text);border:1px solid var(--line);bord
 <div class="card">
   <h2>Signal log — mark what happened next</h2>
   <table><thead><tr>
-    <th>Time</th><th>Ticker</th><th class="num">z</th><th class="num">ER</th><th class="num">Price</th><th>Outcome</th>
+    <th>Time</th><th>Ticker</th><th class="num">z</th><th class="num">ER</th><th class="num">Vol&times;</th><th class="num">Price</th><th>Outcome</th>
   </tr></thead><tbody>
   {% for r in rows %}
     <tr>
       <td>{{ r.ts }}</td><td><strong>{{ r.ticker }}</strong></td>
       <td class="num">{{ '%.2f'|format(r.z) }}</td>
       <td class="num">{{ '%.2f'|format(r.er) }}</td>
+      <td class="num">{{ ('%.1f'|format(r.vol_ratio)) ~ 'x' if r.vol_ratio else '-' }}</td>
       <td class="num">${{ '%.2f'|format(r.price) }}</td>
       <td>
         <span class="pill p-{{ r.outcome }}">{{ r.outcome }}</span>

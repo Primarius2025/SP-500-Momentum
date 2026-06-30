@@ -1,4 +1,4 @@
-"""Shared Postgres access for the signal agent (Railway sets DATABASE_URL)."""
+"""Shared Postgres access for the momentum agent (Railway sets DATABASE_URL)."""
 import os
 import psycopg2
 import psycopg2.extras
@@ -14,25 +14,25 @@ def init():
     with conn() as c, c.cursor() as cur:
         cur.execute("""
             CREATE TABLE IF NOT EXISTS signals(
-                id      SERIAL PRIMARY KEY,
-                ts      TEXT,
-                ticker  TEXT,
-                z       REAL,
-                er      REAL,
-                price   REAL,
-                outcome TEXT DEFAULT 'pending',
-                pnl     REAL,
+                id        SERIAL PRIMARY KEY,
+                ts        TEXT,
+                ticker    TEXT,
+                z         REAL,
+                er        REAL,
+                price     REAL,
+                vol_ratio REAL,
+                outcome   TEXT DEFAULT 'pending',
+                pnl       REAL,
                 UNIQUE(ts, ticker)
             )""")
         c.commit()
 
-def insert_signal(ts, ticker, z, er, price):
-    """Insert one signal; ignore if (ts,ticker) already logged. Returns True if new."""
+def insert_signal(ts, ticker, z, er, price, vol_ratio=None):
     with conn() as c, c.cursor() as cur:
         cur.execute(
-            "INSERT INTO signals(ts,ticker,z,er,price) VALUES(%s,%s,%s,%s,%s) "
+            "INSERT INTO signals(ts,ticker,z,er,price,vol_ratio) VALUES(%s,%s,%s,%s,%s,%s) "
             "ON CONFLICT (ts,ticker) DO NOTHING",
-            (ts, ticker, z, er, price))
+            (ts, ticker, z, er, price, vol_ratio))
         c.commit()
         return cur.rowcount > 0
 

@@ -1,23 +1,27 @@
-# Momentum Agent — "what's being bought" forward test
+# Momentum Agent (volume-confirmed) — "what's being bought" forward test
 
-Watch-only **momentum** scanner for the S&P 500. Mirror image of the oversold tracker:
-it flags stocks pushing UP hard (z >= +2.0) in a genuine trending move (efficiency
-ratio >= 0.50), records them to Postgres, optionally pings your phone, and shows them
-on a web dashboard. **It places no trades and connects to no brokerage.**
+Watch-only momentum scanner for the S&P 500. Flags a stock when ALL of:
+  - price pushing UP hard           (z >= +2.0)
+  - the move is a real trend        (efficiency ratio >= 0.50)
+  - backed by heavy trading         (volume >= 1.5x its recent average)
 
-Same two-service setup as the oversold agent (dashboard + scanner + shared Postgres).
-See the oversold repo's README for the exact Railway steps — identical, just a new
-project/repo. Cron suggestion: `*/15 13-20 * * 1-5`.
+Records signals (with the volume ratio) to Postgres, optional phone alert, web dashboard.
+Places no trades, connects to no brokerage. Quotes from Yahoo (free, read-only).
 
-## How it differs from the oversold scanner
-| | Oversold (mean reversion) | Momentum (this one) |
-|---|---|---|
-| Trigger | z <= -2.0 (sold off)      | z >= +2.0 (bought up)  |
-| Regime  | efficiency ratio < 0.30 (choppy) | efficiency ratio >= 0.50 (trending) |
-| Idea    | buy the dip, sell the bounce | ride strength while it lasts |
+## What the volume check is — and is NOT
+The volume gate (Tier 2) confirms a price move is backed by real activity instead of a
+thin drift. It measures HOW MUCH traded. It does NOT, and cannot, split "buy volume" vs
+"sell volume" — every share traded is simultaneously bought by one side and sold by the
+other, so total volume has no buy/sell split. Estimating which side was the aggressor
+("order flow") needs paid tick/order-book data (Polygon, Databento, broker feeds) and is
+a separate, larger build — and even then it's an estimate, not ground truth.
+
+## Railway setup
+Same two-service pattern as the other agents: dashboard (gunicorn) + scanner (cron
+`*/15 13-20 * * 1-5`) + shared Postgres. On each service set
+DATABASE_URL = ${{Postgres.DATABASE_URL}}.
 
 ## Honest note
-Momentum is a real effect, but riding trends means letting winners run and cutting
-losers — not the symmetric +1%/-1% the dashboard scores. Treat the win-rate gauge here
-loosely: "win" = the name kept climbing after the signal, "loss" = it reversed. It's a
-tracker to see whether hot names keep going, not a complete trading system.
+Momentum is real but you ride winners / cut losers — not the symmetric +1%/-1% the
+dashboard scores. Read the win-rate gauge loosely: "win" = kept climbing, "loss" =
+reversed. It's a tracker to see whether volume-backed hot names keep running.

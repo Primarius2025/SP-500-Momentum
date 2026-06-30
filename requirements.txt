@@ -1,0 +1,8 @@
+flask
+gunicorn
+psycopg2-binary
+yfinance
+pandas
+numpy
+requests
+lxml

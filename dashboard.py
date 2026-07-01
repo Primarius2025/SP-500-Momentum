@@ -40,7 +40,7 @@ def update():
 TEMPLATE = r"""
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Momentum Tracker</title>
+<title>Momentum</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -82,7 +82,7 @@ select{background:var(--ink);color:var(--text);border:1px solid var(--line);bord
 @media(max-width:760px){.hero,.grid2{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
 </style></head><body><div class="wrap">
 <header>
-  <div><h1>Momentum Tracker<span class="dot">.</span></h1>
+  <div><h1>Momentum<span class="dot">.</span></h1>
   <div class="sub">momentum forward test · S&amp;P 500 · watch-only, no trades</div></div>
 </header>
 
@@ -135,7 +135,7 @@ select{background:var(--ink);color:var(--text);border:1px solid var(--line);bord
   </tr></thead><tbody>
   {% for r in rows %}
     <tr>
-      <td>{{ r.ts }}</td><td><strong>{{ r.ticker }}</strong></td>
+      <td>{{ r.ts }}</td><td><a href="https://finance.yahoo.com/quote/{{ r.ticker }}" target="_blank" rel="noopener" style="color:var(--amber);text-decoration:none;font-weight:700">{{ r.ticker }}</a></td>
       <td class="num">{{ '%.2f'|format(r.z) }}</td>
       <td class="num">{{ '%.2f'|format(r.er) }}</td>
       <td class="num">{{ ('%.1f'|format(r.vol_ratio)) ~ 'x' if r.vol_ratio else '-' }}</td>
